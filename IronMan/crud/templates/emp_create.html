@@ -1,49 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>{% if form.instance.pk %}Edit Employee{% else %}Add Employee{% endif %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        input {
-    margin-bottom: 15px;
-}
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === TOP NAV === */
+        .top-nav {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-brand .brand-mark {
+            width: 32px;
+            height: 32px;
+            background: #1e40af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .nav-brand .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .nav-brand .brand-tag {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+            padding: 2px 7px;
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        /* === PAGE === */
+        .page-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 28px 32px 48px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb-bar a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 120ms;
+        }
+
+        .breadcrumb-bar a:hover {
+            color: #1e40af;
+        }
+
+        .breadcrumb-bar .sep {
+            color: #cbd5e1;
+            font-size: 10px;
+        }
+
+        .breadcrumb-bar .current {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        /* Page header */
+        .page-head {
+            margin-bottom: 24px;
+        }
+
+        .page-head h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.025em;
+            margin-bottom: 4px;
+        }
+
+        .page-head p {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* === FORM CARD === */
+        .form-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .form-card-header i {
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .form-card-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 28px 24px;
+        }
+
+        /* Fields */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .field-group label i {
+            margin-right: 4px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 9px 13px;
+            background: #fff !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 8px !important;
+            color: #1e293b !important;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 150ms ease;
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af !important;
+        }
+
+        .form-control:focus {
+            border-color: #93c5fd !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08) !important;
+            outline: none;
+        }
+
+        /* Error */
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .error-box>i {
+            color: #dc2626;
+            font-size: 15px;
+            margin-top: 1px;
+        }
+
+        .error-box .err-title {
+            font-weight: 600;
+            color: #dc2626;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .error-box .err-text {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 4px;
+            padding-top: 20px;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 20px;
+            background: #1e40af;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 150ms ease;
+            box-shadow: 0 1px 2px rgba(30, 64, 175, 0.2);
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 20px;
+            background: #fff;
+            color: #475569;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .btn-back:hover {
+            background: #f9fafb;
+            color: #1e293b;
+            border-color: #9ca3af;
+        }
+
+        @media (max-width: 640px) {
+            .page-wrap {
+                padding: 20px 16px;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            .top-nav {
+                padding: 0 16px;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-       <div class="row">
-        <div class="col-md-12">
-            <h1>ADD EMPLOYEE</h1>
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <a href="{% url 'emp_list' %}" class="nav-brand">
+            <div class="brand-mark">IM</div>
+            <span class="brand-name">IronMan</span>
+        </a>
+    </nav>
+
+    <div class="page-wrap">
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-card-header">
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square"></i>
+                <h3>Employee Details</h3>
+                {% else %}
+                <i class="bi bi-person-plus-fill"></i>
+                <h3>Employee Details</h3>
+                {% endif %}
+            </div>
+            <div class="form-card-body">
+
+                {% if form.errors %}
+                <div class="error-box">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <div class="err-title">Please fix the following errors</div>
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <div class="err-text">{{ field.label }}: {{ error }}</div>
+                        {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                        <div class="err-text">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <form action="" method="post">
+                    {%csrf_token%}
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="id_emp_id"><i class="bi bi-hash"></i> Employee ID</label>
+                            {{form.emp_id}}
+                        </div>
+                        <div class="field-group">
+                            <label for="id_emp_name"><i class="bi bi-person"></i> Full Name</label>
+                            {{form.emp_name}}
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="id_emp_email"><i class="bi bi-envelope"></i> Email Address</label>
+                            {{form.emp_email}}
+                        </div>
+                        <div class="field-group">
+                            <label for="id_emp_address"><i class="bi bi-geo-alt"></i> Address</label>
+                            {{form.emp_address}}
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">
+                            {% if form.instance.pk %}
+                            <i class="bi bi-check-lg"></i> Save Changes
+                            {% else %}
+                            <i class="bi bi-plus-lg"></i> Create Employee
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'emp_list' %}" class="btn-back">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-       </div>
-       <form action="" method="post">
-            {%csrf_token%}
-            <div class="col-md-6">
-                <label for="">EMP ID</label>
-                {{form.emp_id}}
-            </div>
-            <div class="col-md-6">
-                <label for="">NAME</label>
-                {{form.emp_name}}
-            </div>
-            <div class="col-md-6">
-                <label for="">EMAIL</label>
-                {{form.emp_email}}
-            </div>
-            <div class="col-md-6">
-                <label for="">ADDRESS</label>
-                {{form.emp_address}}
-            </div>
-            <button type="submit" class="btn btn-primary">Create</button>
-       </form>
     </div>
-    
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

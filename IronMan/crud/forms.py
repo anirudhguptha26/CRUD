@@ -9,20 +9,20 @@ class EmployeeForm(forms.ModelForm):
         widgets = {
             'emp_id' : forms.NumberInput(attrs={
                 'class':'form-control',
-                'placeholder': 'Emp id'
+                'placeholder': 'Employee id'
             }),
             'emp_name' : forms.TextInput(attrs={
                 'class':'form-control',
-                'placeholder':'Emp Name'
+                'placeholder':'Employee Name'
                 
             }),
             'emp_email' : forms.EmailInput(attrs={
                 'class':'form-control',
-                'placeholder':'Emp Email'
+                'placeholder':'Employee Email'
             }),
             'emp_address' : forms.TextInput(attrs={
                 'class':'form-control',
-                'placeholder':'Emp Address'
+                'placeholder':'Employee Address'
             })
             
         }
